@@ -5,7 +5,8 @@ export async function getWebLLM() {
   if (!enginePromise) {
     enginePromise = (async () => {
       try {
-        const mod: any = await import(/* @vite-ignore */ "https://esm.run/@mlc-ai/web-llm");
+        // @ts-ignore - dynamic ESM import from CDN at runtime (lazy, never bundled)
+        const mod: any = await import(/* @vite-ignore */ ("https://esm.run/@mlc-ai/web-llm"));
         const engine = await mod.CreateMLCEngine("TinyLlama-1.1B-Chat-v1.0-q4f16_1-MLC");
         return engine;
       } catch (e) {
