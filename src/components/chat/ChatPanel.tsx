@@ -8,6 +8,7 @@ import { streamChat, type ChatMode, type AIMessage } from "@/services/aiService"
 import { retrieve } from "@/services/ragService";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { BACKEND_ENABLED, backendChat } from "@/lib/backendClient";
 
 interface Props { mode: ChatMode; pdfId?: string; pdfTitle?: string; title: string; subtitle: string; }
 
@@ -28,6 +29,18 @@ export default function ChatPanel({ mode, pdfId, pdfTitle, title, subtitle }: Pr
     setMessages(p => [...p, userMsg, { role: "assistant", content: "" }]);
     setBusy(true);
     try {
+      // Server-side path: backend does RAG + AI in one call.
+      if (BACKEND_ENABLED) {
+        const r = await backendChat({
+          messages: [...messages, userMsg].map(m => ({ role: m.role, content: m.content })),
+          document_id: pdfId,
+          mode: mode === "offline" ? "tutor" : (mode as any),
+        });
+        setMessages(p => { const c = [...p]; c[c.length-1] = { role: "assistant", content: r.answer }; return c; });
+        setBusy(false);
+        return;
+      }
+
       let context = "";
       if (pdfId || mode === "strict") {
         const chunks = await retrieve(text, { pdfId, userId: user?.id, k: 5 });
