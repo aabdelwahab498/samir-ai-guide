@@ -1,0 +1,26 @@
+{
+  "app": { "name": "SAMIR", "tagline": "AI Tutor" },
+  "nav": {
+    "home": "Home", "tutor": "Tutor", "detective": "Detective", "quiz": "Quiz",
+    "tracker": "Tracker", "chats": "Multi Chats", "schedule": "Schedule",
+    "groups": "Groups", "community": "Community", "about": "About"
+  },
+  "auth": {
+    "signIn": "Sign in", "signUp": "Sign up", "signOut": "Sign out",
+    "guest": "Guest mode", "exitGuest": "Exit guest mode",
+    "guestBanner": "You're in Guest mode — sign up to upload PDFs and save your work.",
+    "notSignedIn": "Not signed in"
+  },
+  "common": {
+    "language": "Language", "theme": "Theme", "light": "Light", "dark": "Dark", "system": "System",
+    "cancel": "Cancel", "save": "Save", "loading": "Loading…", "settings": "Settings"
+  },
+  "upload": {
+    "title": "Upload a PDF",
+    "desc": "Text + OCR + RAG indexing happens automatically.",
+    "choose": "Choose PDF",
+    "ocrLang": "OCR language",
+    "guestDisabled": "Guest mode — uploads are disabled",
+    "guestDesc": "Create a free account to upload PDFs, run OCR, and save your library."
+  }
+}
