@@ -63,7 +63,6 @@ export default function Quiz() {
       if (quiz) {
         await supabase.from("quiz_attempts").insert({ quiz_id: quiz.id, user_id: user.id, score, total: questions.length, answers: answers as any, weak_topics: weak });
         for (const t of weak) await supabase.from("weak_topics").insert({ user_id: user.id, topic: t, weight: 1 });
-        await supabase.rpc("set_updated_at" as any).catch(() => {});
         // award coins
         const { data: prof } = await supabase.from("profiles").select("coins").eq("id", user.id).single();
         await supabase.from("profiles").update({ coins: (prof?.coins ?? 0) + score * 10 }).eq("id", user.id);
