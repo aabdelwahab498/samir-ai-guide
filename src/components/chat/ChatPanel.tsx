@@ -10,10 +10,11 @@ import { retrieve } from "@/services/ragService";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { BACKEND_ENABLED, backendChat } from "@/lib/backendClient";
+import { supabase } from "@/integrations/supabase/client";
 
-interface Props { mode: ChatMode; pdfId?: string; pdfTitle?: string; title: string; subtitle: string; }
+interface Props { mode: ChatMode; pdfId?: string; pdfTitle?: string; title: string; subtitle: string; chatId?: string; }
 
-export default function ChatPanel({ mode, pdfId, pdfTitle, title, subtitle }: Props) {
+export default function ChatPanel({ mode, pdfId, pdfTitle, title, subtitle, chatId }: Props) {
   const { t } = useTranslation();
   const [messages, setMessages] = useState<AIMessage[]>([]);
   const [input, setInput] = useState("");
@@ -23,6 +24,27 @@ export default function ChatPanel({ mode, pdfId, pdfTitle, title, subtitle }: Pr
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
+  // Load existing messages when a chat is selected
+  useEffect(() => {
+    let cancelled = false;
+    if (!chatId || !user) { setMessages([]); return; }
+    (async () => {
+      const { data } = await supabase
+        .from("messages")
+        .select("role, content")
+        .eq("chat_id", chatId)
+        .order("created_at", { ascending: true });
+      if (!cancelled && data) setMessages(data.map((m: any) => ({ role: m.role, content: m.content })));
+    })();
+    return () => { cancelled = true; };
+  }, [chatId, user]);
+
+  async function persist(role: "user" | "assistant", content: string) {
+    if (!chatId || !user) return;
+    await supabase.from("messages").insert({ chat_id: chatId, user_id: user.id, role, content });
+    await supabase.from("chats").update({ updated_at: new Date().toISOString() }).eq("id", chatId);
+  }
+
   async function send() {
     const text = input.trim();
     if (!text || busy) return;
@@ -30,6 +52,7 @@ export default function ChatPanel({ mode, pdfId, pdfTitle, title, subtitle }: Pr
     const userMsg: AIMessage = { role: "user", content: text };
     setMessages(p => [...p, userMsg, { role: "assistant", content: "" }]);
     setBusy(true);
+    persist("user", text);
     try {
       // Server-side path: backend does RAG + AI in one call.
       if (BACKEND_ENABLED) {
@@ -39,6 +62,7 @@ export default function ChatPanel({ mode, pdfId, pdfTitle, title, subtitle }: Pr
           mode: mode === "offline" ? "tutor" : (mode as any),
         });
         setMessages(p => { const c = [...p]; c[c.length-1] = { role: "assistant", content: r.answer }; return c; });
+        persist("assistant", r.answer);
         setBusy(false);
         return;
       }
@@ -48,7 +72,9 @@ export default function ChatPanel({ mode, pdfId, pdfTitle, title, subtitle }: Pr
         const chunks = await retrieve(text, { pdfId, userId: user?.id, k: 5 });
         context = chunks.map((c, i) => `[Chunk ${i+1}${c.page ? ` p.${c.page}` : ""}]\n${c.content}`).join("\n\n");
         if (mode === "strict" && !context) {
-          setMessages(p => { const c = [...p]; c[c.length-1] = { role: "assistant", content: "This information is not in the provided PDF." }; return c; });
+          const msg = "This information is not in the provided PDF.";
+          setMessages(p => { const c = [...p]; c[c.length-1] = { role: "assistant", content: msg }; return c; });
+          persist("assistant", msg);
           setBusy(false); return;
         }
       }
@@ -60,6 +86,7 @@ export default function ChatPanel({ mode, pdfId, pdfTitle, title, subtitle }: Pr
           setMessages(p => { const c = [...p]; c[c.length-1] = { role: "assistant", content: acc }; return c; });
         }
       );
+      if (acc) persist("assistant", acc);
     } catch (e: any) {
       toast.error(e?.message ?? "AI request failed");
       setMessages(p => p.slice(0, -1));
