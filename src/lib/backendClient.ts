@@ -64,10 +64,18 @@ export function backendChat(args: {
   document_id?: string;
   mode?: "tutor" | "detective" | "strict" | "cloud";
   chat_id?: string;
+  lang?: string;
 }) {
+  const payload = {
+    ...args,
+    lang:
+      args.lang ||
+      (typeof navigator !== "undefined" ? navigator.language : "") ||
+      "en",
+  };
   return request<{ answer: string; citations: BackendChunk[] }>("/api/chat", {
     method: "POST",
-    body: JSON.stringify(args),
+    body: JSON.stringify(payload),
   });
 }
 
