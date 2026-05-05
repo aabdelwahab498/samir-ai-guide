@@ -310,6 +310,33 @@ export type Database = {
         }
         Relationships: []
       }
+      prompt_settings: {
+        Row: {
+          id: string
+          mode: string
+          model: string
+          system_prompt: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          mode: string
+          model?: string
+          system_prompt: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          id?: string
+          mode?: string
+          model?: string
+          system_prompt?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       quiz_attempts: {
         Row: {
           answers: Json | null
