@@ -3,13 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload, FileText, Loader2, X, AlertTriangle } from "lucide-react";
-import { processPdf } from "@/lib/pdfService";
+import { Upload, FileText, Loader2, X, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { processPdf, type ProcessedPdf } from "@/lib/pdfService";
 import { embedAndStoreChunks } from "@/services/ragService";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { checkOcrAssets, createOcrController, terminateOcr, type OcrLang } from "@/services/ocrService";
+import { checkOcrAssets, createOcrController, terminateOcr, MAX_OCR_WORKERS, type OcrLang, type OcrController } from "@/services/ocrService";
 
 export default function PdfUploader({ onDone }: { onDone?: (pdfId: string, title: string) => void }) {
   const { user, isGuest } = useAuth();
@@ -19,34 +19,37 @@ export default function PdfUploader({ onDone }: { onDone?: (pdfId: string, title
   const [pct, setPct] = useState(0);
   const [lang, setLang] = useState<OcrLang>("eng+ara");
   const [missing, setMissing] = useState<string[]>([]);
-  const controllerRef = useRef(createOcrController());
+  const [summary, setSummary] = useState<(ProcessedPdf & { fileName: string }) | null>(null);
+  const controllerRef = useRef<OcrController | null>(null);
 
   useEffect(() => {
     checkOcrAssets(lang).then((r) => setMissing(r.ok ? [] : r.missing));
+    // language switch → recycle worker to free memory
+    terminateOcr().catch(() => {});
   }, [lang]);
 
-  useEffect(() => () => { terminateOcr().catch(() => {}); }, []);
+  useEffect(() => () => {
+    controllerRef.current?.cancel();
+    terminateOcr().catch(() => {});
+  }, []);
 
   function cancel() {
-    controllerRef.current.cancel();
+    controllerRef.current?.cancel();
     toast.message("Cancelling…");
+    terminateOcr().catch(() => {});
   }
 
   async function handleFile(file: File) {
-    if (!user) { toast.error("Sign in to upload PDFs (guests can chat without PDF)."); return; }
+    if (!user) { toast.error("Sign in to upload PDFs."); return; }
     const assets = await checkOcrAssets(lang);
-    if (!assets.ok) {
-      toast.error(`Missing OCR files: ${assets.missing.join(", ")}`);
-      setMissing(assets.missing);
-      return;
-    }
-    controllerRef.current = createOcrController();
-    setBusy(true); setPct(0); setStage("reading"); setPageInfo(null);
+    if (!assets.ok) { toast.error(`Missing OCR files: ${assets.missing.join(", ")}`); setMissing(assets.missing); return; }
+
+    const ctrl = createOcrController();
+    controllerRef.current = ctrl;
+    setBusy(true); setPct(0); setStage("reading"); setPageInfo(null); setSummary(null);
     try {
       const result = await processPdf(file, {
-        lang,
-        userId: user.id,
-        controller: controllerRef.current,
+        lang, userId: user.id, controller: ctrl,
         onProgress: ({ stage, page, total, pct }) => {
           setStage(stage);
           if (page && total) setPageInfo({ p: page, t: total });
@@ -64,6 +67,7 @@ export default function PdfUploader({ onDone }: { onDone?: (pdfId: string, title
       setStage("indexing"); setPct(85);
       await embedAndStoreChunks(pdfRow.id, user.id, result.chunks);
       setPct(100); setStage("done");
+      setSummary({ ...result, fileName: file.name });
       toast.success(`Indexed ${result.chunks.length} chunks from ${file.name}`);
       onDone?.(pdfRow.id, file.name);
     } catch (e: any) {
@@ -74,6 +78,7 @@ export default function PdfUploader({ onDone }: { onDone?: (pdfId: string, title
       }
     } finally {
       setBusy(false);
+      controllerRef.current = null;
       await terminateOcr().catch(() => {});
     }
   }
@@ -86,7 +91,7 @@ export default function PdfUploader({ onDone }: { onDone?: (pdfId: string, title
         </div>
         <div>
           <h3 className="font-semibold">Upload a PDF</h3>
-          <p className="text-xs text-muted-foreground">Text + OCR + RAG indexing happens automatically.</p>
+          <p className="text-xs text-muted-foreground">Text + OCR + RAG indexing happens automatically. (Workers: {MAX_OCR_WORKERS})</p>
         </div>
 
         <div className="flex items-center justify-center gap-2">
@@ -124,6 +129,22 @@ export default function PdfUploader({ onDone }: { onDone?: (pdfId: string, title
 
         {busy && <Progress value={pct} className="mt-2" />}
         {isGuest && <p className="text-xs text-warning">Guest mode: sign in to save PDFs.</p>}
+
+        {summary && (
+          <div className="mt-3 text-left rounded-lg border bg-muted/30 p-3 text-xs space-y-1">
+            <div className="flex items-center gap-1 font-medium">
+              <CheckCircle2 className="h-3 w-3 text-success" />
+              {summary.fileName}
+            </div>
+            <div>Pages: <b>{summary.pages}</b> · OCR run: <b>{summary.ocrPagesRun}</b> · From cache: <b>{summary.ocrPagesCached}</b></div>
+            <div>Chunks: <b>{summary.chunks.length}</b> · Chars: <b>{summary.totalChars.toLocaleString()}</b> · Time: <b>{(summary.durationMs / 1000).toFixed(1)}s</b></div>
+            {summary.failures.length > 0 && (
+              <div className="text-destructive">
+                Failed pages: {summary.failures.map((f) => `p${f.page}(${f.attempts}x)`).join(", ")}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </Card>
   );
