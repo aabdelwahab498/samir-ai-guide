@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabaseClient";
 import { webllmChat } from "@/lib/webllmService";
+import i18n from "@/i18n";
 
 export type ChatMode = "tutor" | "detective" | "strict" | "offline" | "cloud";
 
@@ -26,7 +27,13 @@ export async function streamChat(req: AIRequest, onDelta: (s: string) => void): 
       "Content-Type": "application/json",
       Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
     },
-    body: JSON.stringify({ mode: req.mode, messages: req.messages, context: req.context, pdfTitle: req.pdfTitle }),
+    body: JSON.stringify({
+      mode: req.mode,
+      messages: req.messages,
+      context: req.context,
+      pdfTitle: req.pdfTitle,
+      lang: (typeof navigator !== "undefined" ? navigator.language : "") || i18n.language || "en",
+    }),
   });
 
   if (resp.status === 429) throw new Error("Rate limit reached. Please wait a moment and try again.");
