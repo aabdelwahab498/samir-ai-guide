@@ -1,0 +1,26 @@
+{
+  "app": { "name": "SAMIR", "tagline": "Tuteur IA" },
+  "nav": {
+    "home": "Accueil", "tutor": "Tuteur", "detective": "Détective", "quiz": "Quiz",
+    "tracker": "Suivi", "chats": "Multi-Chats", "schedule": "Agenda",
+    "groups": "Groupes", "community": "Communauté", "about": "À propos"
+  },
+  "auth": {
+    "signIn": "Se connecter", "signUp": "S'inscrire", "signOut": "Déconnexion",
+    "guest": "Mode invité", "exitGuest": "Quitter le mode invité",
+    "guestBanner": "Mode invité — inscrivez-vous pour téléverser des PDF.",
+    "notSignedIn": "Non connecté"
+  },
+  "common": {
+    "language": "Langue", "theme": "Thème", "light": "Clair", "dark": "Sombre", "system": "Système",
+    "cancel": "Annuler", "save": "Enregistrer", "loading": "Chargement…", "settings": "Paramètres"
+  },
+  "upload": {
+    "title": "Téléverser un PDF",
+    "desc": "Extraction de texte + OCR + indexation RAG automatique.",
+    "choose": "Choisir un PDF",
+    "ocrLang": "Langue OCR",
+    "guestDisabled": "Mode invité — téléversement désactivé",
+    "guestDesc": "Créez un compte gratuit pour téléverser et sauvegarder."
+  }
+}

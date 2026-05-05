@@ -1,0 +1,14 @@
+{
+  "name": "SAMIR — AI Tutor",
+  "short_name": "SAMIR",
+  "description": "Chat with your PDFs, generate quizzes, and learn smarter.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b0b14",
+  "theme_color": "#7c3aed",
+  "icons": [
+    { "src": "/placeholder.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

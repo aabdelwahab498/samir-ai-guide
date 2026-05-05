@@ -1,0 +1,26 @@
+{
+  "app": { "name": "SAMIR", "tagline": "Tutor IA" },
+  "nav": {
+    "home": "Inicio", "tutor": "Tutor", "detective": "Detective", "quiz": "Quiz",
+    "tracker": "Progreso", "chats": "Multi Chats", "schedule": "Agenda",
+    "groups": "Grupos", "community": "Comunidad", "about": "Acerca de"
+  },
+  "auth": {
+    "signIn": "Iniciar sesión", "signUp": "Registrarse", "signOut": "Cerrar sesión",
+    "guest": "Modo invitado", "exitGuest": "Salir del modo invitado",
+    "guestBanner": "Modo invitado — regístrate para subir PDFs.",
+    "notSignedIn": "No has iniciado sesión"
+  },
+  "common": {
+    "language": "Idioma", "theme": "Tema", "light": "Claro", "dark": "Oscuro", "system": "Sistema",
+    "cancel": "Cancelar", "save": "Guardar", "loading": "Cargando…", "settings": "Ajustes"
+  },
+  "upload": {
+    "title": "Subir un PDF",
+    "desc": "Extracción de texto + OCR + indexación RAG automática.",
+    "choose": "Elegir PDF",
+    "ocrLang": "Idioma OCR",
+    "guestDisabled": "Modo invitado — subida desactivada",
+    "guestDesc": "Crea una cuenta gratis para subir y guardar tus PDFs."
+  }
+}
