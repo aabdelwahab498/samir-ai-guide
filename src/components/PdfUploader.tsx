@@ -11,6 +11,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { checkOcrAssets, createOcrController, terminateOcr, MAX_OCR_WORKERS, type OcrLang, type OcrController } from "@/services/ocrService";
+import { BACKEND_ENABLED, backendUploadPdf } from "@/lib/backendClient";
 
 export default function PdfUploader({ onDone }: { onDone?: (pdfId: string, title: string) => void }) {
   const { user, isGuest, disableGuest } = useAuth();
@@ -42,6 +43,26 @@ export default function PdfUploader({ onDone }: { onDone?: (pdfId: string, title
 
   async function handleFile(file: File) {
     if (!user) { toast.error("Please sign up or sign in to upload PDFs."); return; }
+
+    // Server-side path: delegate everything to FastAPI backend.
+    if (BACKEND_ENABLED) {
+      setBusy(true); setPct(10); setStage("uploading to backend"); setSummary(null);
+      try {
+        const r = await backendUploadPdf(file);
+        setPct(100); setStage("done");
+        setSummary({
+          fileName: file.name, pages: r.pages, chunks: new Array(r.chunks_count).fill(null) as any,
+          usedOcr: r.used_ocr, totalChars: 0, fileHash: "", ocrPagesRun: r.used_ocr ? r.pages : 0,
+          ocrPagesCached: 0, failures: [], durationMs: r.processing_time_ms,
+        });
+        toast.success(`Indexed ${r.chunks_count} chunks from ${file.name}`);
+        onDone?.(r.document_id, file.name);
+      } catch (e: any) {
+        console.error(e); toast.error(e?.message ?? "Backend upload failed");
+      } finally { setBusy(false); }
+      return;
+    }
+
     const assets = await checkOcrAssets(lang);
     if (!assets.ok) { toast.error(`Missing OCR files: ${assets.missing.join(", ")}`); setMissing(assets.missing); return; }
 
