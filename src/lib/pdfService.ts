@@ -2,12 +2,18 @@ import { pdfjsLib } from "@/config/pdfConfig";
 import { ocrPdfPage, sha256Hex, OcrCancelledError, type OcrLang, type OcrController, terminateOcr } from "@/services/ocrService";
 import { chunkText, type Chunk } from "@/utils/chunking";
 
+export interface PageFailure { page: number; error: string; attempts: number }
+
 export interface ProcessedPdf {
   pages: number;
   chunks: Chunk[];
   usedOcr: boolean;
   totalChars: number;
   fileHash: string;
+  ocrPagesRun: number;
+  ocrPagesCached: number;
+  failures: PageFailure[];
+  durationMs: number;
 }
 
 export interface ProcessOptions {
@@ -19,6 +25,7 @@ export interface ProcessOptions {
 
 export async function processPdf(file: File, opts: ProcessOptions = {}): Promise<ProcessedPdf> {
   const { lang = "eng+ara", userId = null, controller, onProgress } = opts;
+  const start = performance.now();
   const buf = await file.arrayBuffer();
   const fileHash = await sha256Hex(buf.slice(0));
   const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
@@ -26,6 +33,9 @@ export async function processPdf(file: File, opts: ProcessOptions = {}): Promise
   let usedOcr = false;
   let totalChars = 0;
   let runningIndex = 0;
+  let ocrPagesRun = 0;
+  let ocrPagesCached = 0;
+  const failures: PageFailure[] = [];
 
   try {
     for (let p = 1; p <= pdf.numPages; p++) {
@@ -38,10 +48,15 @@ export async function processPdf(file: File, opts: ProcessOptions = {}): Promise
       if (text.length < 40) {
         onProgress?.({ stage: "ocr", page: p, total: pdf.numPages, pct: Math.round(((p - 1) / pdf.numPages) * 100) });
         try {
-          text = await ocrPdfPage(buf.slice(0), p, lang, { fileHash, userId, controller });
+          const r = await ocrPdfPage(buf.slice(0), p, lang, { fileHash, userId, controller });
+          text = r.text;
           usedOcr = true;
-        } catch (e) {
+          if (r.fromCache) ocrPagesCached++;
+          else ocrPagesRun++;
+          if (r.error) failures.push({ page: p, error: r.error, attempts: r.attempts });
+        } catch (e: any) {
           if (e instanceof OcrCancelledError) throw e;
+          failures.push({ page: p, error: String(e?.message ?? e), attempts: 0 });
           console.error("OCR failed page", p, e);
         }
       }
@@ -49,12 +64,14 @@ export async function processPdf(file: File, opts: ProcessOptions = {}): Promise
       totalChars += text.length;
       const pageChunks = chunkText(text, p);
       for (const c of pageChunks) { c.index = runningIndex++; allChunks.push(c); }
-      await new Promise((r) => setTimeout(r, 0)); // yield to UI
+      await new Promise((r) => setTimeout(r, 0));
     }
     onProgress?.({ stage: "done", pct: 100 });
-    return { pages: pdf.numPages, chunks: allChunks, usedOcr, totalChars, fileHash };
+    return {
+      pages: pdf.numPages, chunks: allChunks, usedOcr, totalChars, fileHash,
+      ocrPagesRun, ocrPagesCached, failures, durationMs: Math.round(performance.now() - start),
+    };
   } finally {
-    // free OCR worker memory after each PDF
     await terminateOcr().catch(() => {});
   }
 }
