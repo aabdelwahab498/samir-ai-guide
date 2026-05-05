@@ -173,6 +173,36 @@ export type Database = {
           },
         ]
       }
+      ocr_cache: {
+        Row: {
+          created_at: string
+          file_hash: string
+          id: string
+          lang: string
+          page_num: number
+          text: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_hash: string
+          id?: string
+          lang?: string
+          page_num: number
+          text: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          file_hash?: string
+          id?: string
+          lang?: string
+          page_num?: number
+          text?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       pdf_chunks: {
         Row: {
           chunk_index: number
