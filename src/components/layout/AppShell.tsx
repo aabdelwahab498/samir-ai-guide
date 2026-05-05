@@ -115,7 +115,7 @@ export default function AppShell() {
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" aria-label="Menu"><Menu className="h-5 w-5" /></Button>
           </SheetTrigger>
-          <SheetContent side="start" className="p-0 w-72 flex flex-col">
+          <SheetContent side="left" className="p-0 w-72 flex flex-col">
             <Brand />
             <NavList onNavigate={() => setOpen(false)} />
             <div className="px-3 pb-2"><SettingsMenu /></div>
