@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
@@ -13,6 +14,7 @@ import { BACKEND_ENABLED, backendChat } from "@/lib/backendClient";
 interface Props { mode: ChatMode; pdfId?: string; pdfTitle?: string; title: string; subtitle: string; }
 
 export default function ChatPanel({ mode, pdfId, pdfTitle, title, subtitle }: Props) {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<AIMessage[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -80,7 +82,7 @@ export default function ChatPanel({ mode, pdfId, pdfTitle, title, subtitle }: Pr
         {messages.length === 0 && (
           <Card className="p-8 text-center bg-secondary/30 border-dashed">
             <Sparkles className="h-8 w-8 mx-auto mb-3 text-primary" />
-            <p className="text-sm text-muted-foreground">Ask anything to get started.</p>
+            <p className="text-sm text-muted-foreground">{t("chat.askStart")}</p>
           </Card>
         )}
         {messages.map((m, i) => (
@@ -100,7 +102,7 @@ export default function ChatPanel({ mode, pdfId, pdfTitle, title, subtitle }: Pr
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
-            placeholder="Ask SAMIR anything…"
+            placeholder={t("chat.placeholder")}
             className="min-h-[52px] max-h-40 resize-none"
           />
           <Button onClick={send} disabled={busy || !input.trim()} size="lg" className="gradient-primary shadow-glow">
