@@ -3,7 +3,7 @@
   "nav": {
     "home": "الرئيسية", "tutor": "المعلم", "detective": "المحقق", "quiz": "اختبار",
     "tracker": "المتابعة", "chats": "محادثات متعددة", "schedule": "الجدول",
-    "groups": "المجموعات", "community": "المجتمع", "about": "حول"
+    "groups": "المجموعات", "community": "المجتمع", "about": "حول", "admin": "الإدارة"
   },
   "auth": {
     "signIn": "تسجيل الدخول", "signUp": "إنشاء حساب", "signOut": "تسجيل الخروج",
@@ -29,6 +29,9 @@
     "activePdf": "الملف النشط",
     "none": "لا شيء",
     "uploadHint": "ارفع ملف PDF لتفعيل RAG.",
+    "previousChats": "المحادثات السابقة",
+    "newChat": "جديدة",
+    "noChats": "لا توجد محادثات بعد",
     "modes": {
       "tutor": "🎓 المعلم",
       "detective": "🕵️ المحقق",
@@ -46,5 +49,12 @@
     "tutorSubtitle": "معلم خبير ودود مستند إلى ملفاتك",
     "detectiveTitle": "🕵️ وضع المحقق",
     "detectiveSubtitle": "تعلّم كيف تبحث وتستنتج"
+  },
+  "admin": {
+    "title": "لوحة الإدارة · البرومبت",
+    "subtitle": "تحكّم في البرومبت والموديل لكل وضع محادثة.",
+    "model": "الموديل",
+    "systemPrompt": "البرومبت (System prompt)",
+    "saved": "تم الحفظ"
   }
 }

@@ -1,11 +1,12 @@
 import { NavLink, Outlet, Link, useNavigate } from "react-router-dom";
-import { Home, GraduationCap, Search, ListChecks, BarChart3, MessagesSquare, Calendar, Users, Globe, Info, LogOut, Sparkles, LogIn, Menu } from "lucide-react";
+import { Home, GraduationCap, Search, ListChecks, BarChart3, MessagesSquare, Calendar, Users, Globe, Info, LogOut, Sparkles, LogIn, Menu, Shield } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import SettingsMenu from "@/components/SettingsMenu";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 const NAV = [
   { to: "/app", labelKey: "nav.home", icon: Home, end: true },
@@ -22,9 +23,11 @@ const NAV = [
 
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
   const { t } = useTranslation();
+  const { isAdmin } = useIsAdmin();
+  const items = isAdmin ? [...NAV, { to: "/app/admin", labelKey: "nav.admin", icon: Shield } as any] : NAV;
   return (
     <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
-      {NAV.map((n) => (
+      {items.map((n) => (
         <NavLink
           key={n.to} to={n.to} end={n.end} onClick={onNavigate}
           className={({ isActive }) =>
