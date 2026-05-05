@@ -7,9 +7,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/hooks/useAuth";
 import { FileText } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { ChatMode } from "@/services/aiService";
 
 export default function Home() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [pdfs, setPdfs] = useState<{ id: string; title: string }[]>([]);
   const [pdfId, setPdfId] = useState<string | undefined>();
@@ -27,36 +29,36 @@ export default function Home() {
   return (
     <div className="grid lg:grid-cols-[340px_1fr] h-screen">
       <aside className="border-r p-4 space-y-4 overflow-y-auto bg-card/30">
-        <h2 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">Your library</h2>
+        <h2 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">{t("home.library")}</h2>
         <PdfUploader onDone={(id) => { setPdfId(id); load(); }} />
         <div className="space-y-2">
-          <label className="text-xs text-muted-foreground">Chat mode</label>
+          <label className="text-xs text-muted-foreground">{t("home.chatMode")}</label>
           <Select value={mode} onValueChange={v => setMode(v as ChatMode)}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="tutor">🎓 Tutor</SelectItem>
-              <SelectItem value="detective">🕵️ Detective</SelectItem>
-              <SelectItem value="strict">📄 Strict PDF</SelectItem>
-              <SelectItem value="offline">🤖 Offline (WebLLM)</SelectItem>
-              <SelectItem value="cloud">☁️ Cloud</SelectItem>
+              <SelectItem value="tutor">{t("home.modes.tutor")}</SelectItem>
+              <SelectItem value="detective">{t("home.modes.detective")}</SelectItem>
+              <SelectItem value="strict">{t("home.modes.strict")}</SelectItem>
+              <SelectItem value="offline">{t("home.modes.offline")}</SelectItem>
+              <SelectItem value="cloud">{t("home.modes.cloud")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-1">
-          <label className="text-xs text-muted-foreground">Active PDF</label>
+          <label className="text-xs text-muted-foreground">{t("home.activePdf")}</label>
           <Card className="p-2 max-h-72 overflow-y-auto space-y-1">
-            <Button variant={!pdfId ? "secondary" : "ghost"} size="sm" className="w-full justify-start" onClick={() => setPdfId(undefined)}>None</Button>
+            <Button variant={!pdfId ? "secondary" : "ghost"} size="sm" className="w-full justify-start" onClick={() => setPdfId(undefined)}>{t("home.none")}</Button>
             {pdfs.map(p => (
               <Button key={p.id} variant={pdfId === p.id ? "secondary" : "ghost"} size="sm" className="w-full justify-start text-xs"
                 onClick={() => setPdfId(p.id)}>
                 <FileText className="h-3 w-3 mr-2" />{p.title}
               </Button>
             ))}
-            {pdfs.length === 0 && <p className="text-xs text-muted-foreground p-2">Upload a PDF to enable RAG.</p>}
+            {pdfs.length === 0 && <p className="text-xs text-muted-foreground p-2">{t("home.uploadHint")}</p>}
           </Card>
         </div>
       </aside>
-      <ChatPanel mode={mode} pdfId={pdfId} pdfTitle={pdfTitle} title="SAMIR Chat" subtitle={`${mode.toUpperCase()} mode${pdfTitle ? ` • ${pdfTitle}` : ""}`} />
+      <ChatPanel mode={mode} pdfId={pdfId} pdfTitle={pdfTitle} title={t("chat.title")} subtitle={`${t("chat.modeSuffix", { mode: mode.toUpperCase() })}${pdfTitle ? ` • ${pdfTitle}` : ""}`} />
     </div>
   );
 }

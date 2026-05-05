@@ -22,5 +22,29 @@
     "ocrLang": "Langue OCR",
     "guestDisabled": "Mode invité — téléversement désactivé",
     "guestDesc": "Créez un compte gratuit pour téléverser et sauvegarder."
+  },
+  "home": {
+    "library": "Votre bibliothèque",
+    "chatMode": "Mode de chat",
+    "activePdf": "PDF actif",
+    "none": "Aucun",
+    "uploadHint": "Téléversez un PDF pour activer RAG.",
+    "modes": {
+      "tutor": "🎓 Tuteur",
+      "detective": "🕵️ Détective",
+      "strict": "📄 PDF strict",
+      "offline": "🤖 Hors ligne (WebLLM)",
+      "cloud": "☁️ Cloud"
+    }
+  },
+  "chat": {
+    "title": "Chat SAMIR",
+    "modeSuffix": "mode {{mode}}",
+    "askStart": "Posez une question pour commencer.",
+    "placeholder": "Demandez n'importe quoi à SAMIR…",
+    "tutorTitle": "🎓 Mode Tuteur",
+    "tutorSubtitle": "Un tuteur chaleureux ancré dans vos PDF",
+    "detectiveTitle": "🕵️ Mode Détective",
+    "detectiveSubtitle": "Apprenez à enquêter et raisonner"
   }
 }

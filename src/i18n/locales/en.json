@@ -22,5 +22,29 @@
     "ocrLang": "OCR language",
     "guestDisabled": "Guest mode — uploads are disabled",
     "guestDesc": "Create a free account to upload PDFs, run OCR, and save your library."
+  },
+  "home": {
+    "library": "Your library",
+    "chatMode": "Chat mode",
+    "activePdf": "Active PDF",
+    "none": "None",
+    "uploadHint": "Upload a PDF to enable RAG.",
+    "modes": {
+      "tutor": "🎓 Tutor",
+      "detective": "🕵️ Detective",
+      "strict": "📄 Strict PDF",
+      "offline": "🤖 Offline (WebLLM)",
+      "cloud": "☁️ Cloud"
+    }
+  },
+  "chat": {
+    "title": "SAMIR Chat",
+    "modeSuffix": "{{mode}} mode",
+    "askStart": "Ask anything to get started.",
+    "placeholder": "Ask SAMIR anything…",
+    "tutorTitle": "🎓 Tutor Mode",
+    "tutorSubtitle": "Warm, expert teacher grounded in your PDFs",
+    "detectiveTitle": "🕵️ Detective Mode",
+    "detectiveSubtitle": "Learn HOW to investigate and reason"
   }
 }

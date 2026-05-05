@@ -1,4 +1,6 @@
 import ChatPanel from "@/components/chat/ChatPanel";
+import { useTranslation } from "react-i18next";
 export default function Detective() {
-  return <div className="h-screen"><ChatPanel mode="detective" title="🕵️ Detective Mode" subtitle="Learn HOW to investigate and reason" /></div>;
+  const { t } = useTranslation();
+  return <div className="h-screen"><ChatPanel mode="detective" title={t("chat.detectiveTitle")} subtitle={t("chat.detectiveSubtitle")} /></div>;
 }

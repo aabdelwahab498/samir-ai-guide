@@ -1,4 +1,6 @@
 import ChatPanel from "@/components/chat/ChatPanel";
+import { useTranslation } from "react-i18next";
 export default function Tutor() {
-  return <div className="h-screen"><ChatPanel mode="tutor" title="🎓 Tutor Mode" subtitle="Warm, expert teacher grounded in your PDFs" /></div>;
+  const { t } = useTranslation();
+  return <div className="h-screen"><ChatPanel mode="tutor" title={t("chat.tutorTitle")} subtitle={t("chat.tutorSubtitle")} /></div>;
 }
