@@ -55,6 +55,10 @@
     "subtitle": "Gérez le prompt système et le modèle pour chaque mode.",
     "model": "Modèle",
     "systemPrompt": "Prompt système",
-    "saved": "Enregistré"
+    "saved": "Enregistré",
+    "testPrompt": "Tester le prompt",
+    "testPlaceholder": "Tapez une question d'exemple…",
+    "runTest": "Lancer le test",
+    "testEmpty": "Entrez d'abord une question"
   }
 }

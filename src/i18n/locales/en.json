@@ -55,6 +55,10 @@
     "subtitle": "Control the system prompt and model used for each chat mode.",
     "model": "Model",
     "systemPrompt": "System prompt",
-    "saved": "Saved"
+    "saved": "Saved",
+    "testPrompt": "Test the prompt",
+    "testPlaceholder": "Type a sample question…",
+    "runTest": "Run test",
+    "testEmpty": "Please enter a question first"
   }
 }

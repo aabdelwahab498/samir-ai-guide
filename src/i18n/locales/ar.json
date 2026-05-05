@@ -55,6 +55,10 @@
     "subtitle": "تحكّم في البرومبت والموديل لكل وضع محادثة.",
     "model": "الموديل",
     "systemPrompt": "البرومبت (System prompt)",
-    "saved": "تم الحفظ"
+    "saved": "تم الحفظ",
+    "testPrompt": "اختبار البرومبت",
+    "testPlaceholder": "اكتب سؤال عينة…",
+    "runTest": "تشغيل الاختبار",
+    "testEmpty": "اكتب سؤالاً أولاً"
   }
 }
