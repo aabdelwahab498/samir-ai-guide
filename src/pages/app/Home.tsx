@@ -1,0 +1,62 @@
+import { useEffect, useState } from "react";
+import PdfUploader from "@/components/PdfUploader";
+import ChatPanel from "@/components/chat/ChatPanel";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/lib/supabaseClient";
+import { useAuth } from "@/hooks/useAuth";
+import { FileText } from "lucide-react";
+import type { ChatMode } from "@/services/aiService";
+
+export default function Home() {
+  const { user } = useAuth();
+  const [pdfs, setPdfs] = useState<{ id: string; title: string }[]>([]);
+  const [pdfId, setPdfId] = useState<string | undefined>();
+  const [mode, setMode] = useState<ChatMode>("tutor");
+
+  async function load() {
+    if (!user) return;
+    const { data } = await supabase.from("pdfs").select("id,title").order("created_at", { ascending: false });
+    setPdfs(data ?? []);
+  }
+  useEffect(() => { load(); }, [user]);
+
+  const pdfTitle = pdfs.find(p => p.id === pdfId)?.title;
+
+  return (
+    <div className="grid lg:grid-cols-[340px_1fr] h-screen">
+      <aside className="border-r p-4 space-y-4 overflow-y-auto bg-card/30">
+        <h2 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">Your library</h2>
+        <PdfUploader onDone={(id) => { setPdfId(id); load(); }} />
+        <div className="space-y-2">
+          <label className="text-xs text-muted-foreground">Chat mode</label>
+          <Select value={mode} onValueChange={v => setMode(v as ChatMode)}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="tutor">🎓 Tutor</SelectItem>
+              <SelectItem value="detective">🕵️ Detective</SelectItem>
+              <SelectItem value="strict">📄 Strict PDF</SelectItem>
+              <SelectItem value="offline">🤖 Offline (WebLLM)</SelectItem>
+              <SelectItem value="cloud">☁️ Cloud</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1">
+          <label className="text-xs text-muted-foreground">Active PDF</label>
+          <Card className="p-2 max-h-72 overflow-y-auto space-y-1">
+            <Button variant={!pdfId ? "secondary" : "ghost"} size="sm" className="w-full justify-start" onClick={() => setPdfId(undefined)}>None</Button>
+            {pdfs.map(p => (
+              <Button key={p.id} variant={pdfId === p.id ? "secondary" : "ghost"} size="sm" className="w-full justify-start text-xs"
+                onClick={() => setPdfId(p.id)}>
+                <FileText className="h-3 w-3 mr-2" />{p.title}
+              </Button>
+            ))}
+            {pdfs.length === 0 && <p className="text-xs text-muted-foreground p-2">Upload a PDF to enable RAG.</p>}
+          </Card>
+        </div>
+      </aside>
+      <ChatPanel mode={mode} pdfId={pdfId} pdfTitle={pdfTitle} title="SAMIR Chat" subtitle={`${mode.toUpperCase()} mode${pdfTitle ? ` • ${pdfTitle}` : ""}`} />
+    </div>
+  );
+}
