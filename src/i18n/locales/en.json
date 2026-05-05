@@ -3,7 +3,7 @@
   "nav": {
     "home": "Home", "tutor": "Tutor", "detective": "Detective", "quiz": "Quiz",
     "tracker": "Tracker", "chats": "Multi Chats", "schedule": "Schedule",
-    "groups": "Groups", "community": "Community", "about": "About"
+    "groups": "Groups", "community": "Community", "about": "About", "admin": "Admin"
   },
   "auth": {
     "signIn": "Sign in", "signUp": "Sign up", "signOut": "Sign out",
@@ -29,6 +29,9 @@
     "activePdf": "Active PDF",
     "none": "None",
     "uploadHint": "Upload a PDF to enable RAG.",
+    "previousChats": "Previous chats",
+    "newChat": "New",
+    "noChats": "No chats yet",
     "modes": {
       "tutor": "🎓 Tutor",
       "detective": "🕵️ Detective",
@@ -46,5 +49,12 @@
     "tutorSubtitle": "Warm, expert teacher grounded in your PDFs",
     "detectiveTitle": "🕵️ Detective Mode",
     "detectiveSubtitle": "Learn HOW to investigate and reason"
+  },
+  "admin": {
+    "title": "Admin · Prompts",
+    "subtitle": "Control the system prompt and model used for each chat mode.",
+    "model": "Model",
+    "systemPrompt": "System prompt",
+    "saved": "Saved"
   }
 }
