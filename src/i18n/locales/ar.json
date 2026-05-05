@@ -22,5 +22,29 @@
     "ocrLang": "لغة OCR",
     "guestDisabled": "وضع الضيف — الرفع غير متاح",
     "guestDesc": "أنشئ حساباً مجانياً لرفع الملفات وتشغيل OCR وحفظ مكتبتك."
+  },
+  "home": {
+    "library": "مكتبتك",
+    "chatMode": "وضع المحادثة",
+    "activePdf": "الملف النشط",
+    "none": "لا شيء",
+    "uploadHint": "ارفع ملف PDF لتفعيل RAG.",
+    "modes": {
+      "tutor": "🎓 المعلم",
+      "detective": "🕵️ المحقق",
+      "strict": "📄 صارم على PDF",
+      "offline": "🤖 بدون إنترنت (WebLLM)",
+      "cloud": "☁️ سحابي"
+    }
+  },
+  "chat": {
+    "title": "محادثة سمير",
+    "modeSuffix": "وضع {{mode}}",
+    "askStart": "اسأل أي شيء للبدء.",
+    "placeholder": "اسأل سمير عن أي شيء…",
+    "tutorTitle": "🎓 وضع المعلم",
+    "tutorSubtitle": "معلم خبير ودود مستند إلى ملفاتك",
+    "detectiveTitle": "🕵️ وضع المحقق",
+    "detectiveSubtitle": "تعلّم كيف تبحث وتستنتج"
   }
 }
