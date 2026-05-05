@@ -1,7 +1,8 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { Home, GraduationCap, Search, ListChecks, BarChart3, MessagesSquare, Calendar, Users, Globe, Info, LogOut, Sparkles } from "lucide-react";
+import { Home, GraduationCap, Search, ListChecks, BarChart3, MessagesSquare, Calendar, Users, Globe, Info, LogOut, Sparkles, LogIn } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { Link, useNavigate } from "react-router-dom";
 
 const NAV = [
   { to: "/app", label: "Home", icon: Home, end: true },
@@ -17,9 +18,21 @@ const NAV = [
 ];
 
 export default function AppShell() {
-  const { user, isGuest, signOut } = useAuth();
+  const { user, isGuest, signOut, disableGuest } = useAuth();
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen flex bg-background">
+      {isGuest && !user && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-primary text-primary-foreground px-4 py-2 text-sm flex items-center justify-center gap-3 shadow-glow">
+          <span>👋 You're in Guest mode — sign up to upload PDFs and save your work.</span>
+          <Button size="sm" variant="secondary" onClick={() => { disableGuest(); navigate("/auth"); }}>
+            <LogIn className="h-3 w-3 mr-1" /> Sign up / Sign in
+          </Button>
+          <Button size="sm" variant="ghost" className="text-primary-foreground hover:bg-primary-foreground/10" onClick={() => { disableGuest(); navigate("/"); }}>
+            Exit guest
+          </Button>
+        </div>
+      )}
       <aside className="w-64 border-r bg-card hidden md:flex flex-col">
         <div className="p-5 flex items-center gap-2">
           <div className="h-9 w-9 rounded-xl gradient-primary grid place-items-center shadow-glow">
@@ -45,12 +58,23 @@ export default function AppShell() {
           <div className="text-xs text-muted-foreground mb-2 truncate">
             {user ? user.email : isGuest ? "Guest mode" : "Not signed in"}
           </div>
-          <Button variant="ghost" size="sm" className="w-full justify-start" onClick={signOut}>
-            <LogOut className="h-4 w-4 mr-2" /> Sign out
-          </Button>
+          {isGuest && !user ? (
+            <>
+              <Button size="sm" className="w-full justify-start gradient-primary shadow-glow mb-1" asChild>
+                <Link to="/auth"><LogIn className="h-4 w-4 mr-2" /> Sign up / Sign in</Link>
+              </Button>
+              <Button variant="ghost" size="sm" className="w-full justify-start" onClick={() => { disableGuest(); navigate("/"); }}>
+                <LogOut className="h-4 w-4 mr-2" /> Exit guest mode
+              </Button>
+            </>
+          ) : (
+            <Button variant="ghost" size="sm" className="w-full justify-start" onClick={signOut}>
+              <LogOut className="h-4 w-4 mr-2" /> Sign out
+            </Button>
+          )}
         </div>
       </aside>
-      <main className="flex-1 min-w-0 overflow-y-auto">
+      <main className={`flex-1 min-w-0 overflow-y-auto ${isGuest && !user ? "pt-12" : ""}`}>
         <Outlet />
       </main>
     </div>
