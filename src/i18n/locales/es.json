@@ -3,7 +3,7 @@
   "nav": {
     "home": "Inicio", "tutor": "Tutor", "detective": "Detective", "quiz": "Quiz",
     "tracker": "Progreso", "chats": "Multi Chats", "schedule": "Agenda",
-    "groups": "Grupos", "community": "Comunidad", "about": "Acerca de"
+    "groups": "Grupos", "community": "Comunidad", "about": "Acerca de", "admin": "Admin"
   },
   "auth": {
     "signIn": "Iniciar sesión", "signUp": "Registrarse", "signOut": "Cerrar sesión",
@@ -29,6 +29,9 @@
     "activePdf": "PDF activo",
     "none": "Ninguno",
     "uploadHint": "Sube un PDF para activar RAG.",
+    "previousChats": "Chats anteriores",
+    "newChat": "Nuevo",
+    "noChats": "Sin chats todavía",
     "modes": {
       "tutor": "🎓 Tutor",
       "detective": "🕵️ Detective",
@@ -46,5 +49,12 @@
     "tutorSubtitle": "Tutor cálido basado en tus PDFs",
     "detectiveTitle": "🕵️ Modo Detective",
     "detectiveSubtitle": "Aprende a investigar y razonar"
+  },
+  "admin": {
+    "title": "Admin · Prompts",
+    "subtitle": "Controla el prompt del sistema y el modelo de cada modo.",
+    "model": "Modelo",
+    "systemPrompt": "Prompt del sistema",
+    "saved": "Guardado"
   }
 }
