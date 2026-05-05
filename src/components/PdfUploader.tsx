@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -12,7 +13,7 @@ import { toast } from "sonner";
 import { checkOcrAssets, createOcrController, terminateOcr, MAX_OCR_WORKERS, type OcrLang, type OcrController } from "@/services/ocrService";
 
 export default function PdfUploader({ onDone }: { onDone?: (pdfId: string, title: string) => void }) {
-  const { user, isGuest } = useAuth();
+  const { user, isGuest, disableGuest } = useAuth();
   const [busy, setBusy] = useState(false);
   const [stage, setStage] = useState("");
   const [pageInfo, setPageInfo] = useState<{ p: number; t: number } | null>(null);
@@ -40,7 +41,7 @@ export default function PdfUploader({ onDone }: { onDone?: (pdfId: string, title
   }
 
   async function handleFile(file: File) {
-    if (!user) { toast.error("Sign in to upload PDFs."); return; }
+    if (!user) { toast.error("Please sign up or sign in to upload PDFs."); return; }
     const assets = await checkOcrAssets(lang);
     if (!assets.ok) { toast.error(`Missing OCR files: ${assets.missing.join(", ")}`); setMissing(assets.missing); return; }
 
@@ -128,7 +129,17 @@ export default function PdfUploader({ onDone }: { onDone?: (pdfId: string, title
         </div>
 
         {busy && <Progress value={pct} className="mt-2" />}
-        {isGuest && <p className="text-xs text-warning">Guest mode: sign in to save PDFs.</p>}
+        {isGuest && !user && (
+          <div className="mt-2 rounded-lg border border-primary/30 bg-primary/5 p-3 text-xs space-y-2">
+            <p className="font-medium">Guest mode — uploads are disabled</p>
+            <p className="text-muted-foreground">Create a free account to upload PDFs, run OCR, and save your library.</p>
+            <div className="flex gap-2 justify-center">
+              <Button size="sm" className="gradient-primary shadow-glow" asChild>
+                <Link to="/auth" onClick={() => disableGuest()}>Sign up / Sign in</Link>
+              </Button>
+            </div>
+          </div>
+        )}
 
         {summary && (
           <div className="mt-3 text-left rounded-lg border bg-muted/30 p-3 text-xs space-y-1">
