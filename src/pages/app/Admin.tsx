@@ -8,8 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Loader2, Save } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Loader2, Save, Play } from "lucide-react";
 import { toast } from "sonner";
+import { streamChat, type ChatMode } from "@/services/aiService";
 
 const MODES = ["tutor", "detective", "strict", "cloud"] as const;
 const MODELS = [
@@ -29,6 +31,9 @@ export default function Admin() {
   const { t } = useTranslation();
   const [items, setItems] = useState<Record<string, Setting>>({});
   const [busy, setBusy] = useState<string | null>(null);
+  const [testing, setTesting] = useState<string | null>(null);
+  const [testQ, setTestQ] = useState<Record<string, string>>({});
+  const [testA, setTestA] = useState<Record<string, string>>({});
 
   async function load() {
     const { data, error } = await supabase.from("prompt_settings").select("mode, system_prompt, model");
@@ -50,6 +55,24 @@ export default function Admin() {
       .eq("mode", mode);
     setBusy(null);
     if (error) toast.error(error.message); else toast.success(t("admin.saved"));
+  }
+
+  async function runTest(mode: string) {
+    const q = (testQ[mode] ?? "").trim();
+    if (!q) { toast.error(t("admin.testEmpty")); return; }
+    // Save first so the edge function uses the latest prompt/model
+    await save(mode);
+    setTesting(mode);
+    setTestA(p => ({ ...p, [mode]: "" }));
+    let acc = "";
+    try {
+      await streamChat(
+        { mode: mode as ChatMode, messages: [{ role: "user", content: q }] },
+        (delta) => { acc += delta; setTestA(p => ({ ...p, [mode]: acc })); }
+      );
+    } catch (e: any) {
+      toast.error(e?.message ?? "Test failed");
+    } finally { setTesting(null); }
   }
 
   return (
@@ -91,6 +114,26 @@ export default function Admin() {
                   {busy === m ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
                   {t("common.save")}
                 </Button>
+                <div className="border-t pt-4 space-y-2">
+                  <label className="text-sm font-medium">{t("admin.testPrompt")}</label>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder={t("admin.testPlaceholder")}
+                      value={testQ[m] ?? ""}
+                      onChange={e => setTestQ(p => ({ ...p, [m]: e.target.value }))}
+                      onKeyDown={e => { if (e.key === "Enter") runTest(m); }}
+                    />
+                    <Button onClick={() => runTest(m)} disabled={testing === m} variant="secondary">
+                      {testing === m ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Play className="h-4 w-4 mr-2" />}
+                      {t("admin.runTest")}
+                    </Button>
+                  </div>
+                  {(testA[m] || testing === m) && (
+                    <Card className="p-3 bg-secondary/30 text-sm whitespace-pre-wrap leading-relaxed max-h-80 overflow-y-auto">
+                      {testA[m] || "…"}
+                    </Card>
+                  )}
+                </div>
               </Card>
             </TabsContent>
           );
