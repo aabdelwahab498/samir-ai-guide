@@ -55,6 +55,10 @@
     "subtitle": "Controla el prompt del sistema y el modelo de cada modo.",
     "model": "Modelo",
     "systemPrompt": "Prompt del sistema",
-    "saved": "Guardado"
+    "saved": "Guardado",
+    "testPrompt": "Probar el prompt",
+    "testPlaceholder": "Escribe una pregunta de ejemplo…",
+    "runTest": "Ejecutar prueba",
+    "testEmpty": "Escribe una pregunta primero"
   }
 }
