@@ -20,6 +20,7 @@ import Schedule from "./pages/app/Schedule";
 import Groups from "./pages/app/Groups";
 import Community from "./pages/app/Community";
 import About from "./pages/app/About";
+import Admin from "./pages/app/Admin";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const App = () => (
               <Route path="groups" element={<Groups />} />
               <Route path="community" element={<Community />} />
               <Route path="about" element={<About />} />
+              <Route path="admin" element={<Admin />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
