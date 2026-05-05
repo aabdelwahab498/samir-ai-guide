@@ -22,5 +22,29 @@
     "ocrLang": "Idioma OCR",
     "guestDisabled": "Modo invitado — subida desactivada",
     "guestDesc": "Crea una cuenta gratis para subir y guardar tus PDFs."
+  },
+  "home": {
+    "library": "Tu biblioteca",
+    "chatMode": "Modo de chat",
+    "activePdf": "PDF activo",
+    "none": "Ninguno",
+    "uploadHint": "Sube un PDF para activar RAG.",
+    "modes": {
+      "tutor": "🎓 Tutor",
+      "detective": "🕵️ Detective",
+      "strict": "📄 PDF estricto",
+      "offline": "🤖 Sin conexión (WebLLM)",
+      "cloud": "☁️ Nube"
+    }
+  },
+  "chat": {
+    "title": "Chat SAMIR",
+    "modeSuffix": "modo {{mode}}",
+    "askStart": "Pregunta lo que quieras para empezar.",
+    "placeholder": "Pregúntale a SAMIR lo que quieras…",
+    "tutorTitle": "🎓 Modo Tutor",
+    "tutorSubtitle": "Tutor cálido basado en tus PDFs",
+    "detectiveTitle": "🕵️ Modo Detective",
+    "detectiveSubtitle": "Aprende a investigar y razonar"
   }
 }
